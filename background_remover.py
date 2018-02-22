@@ -82,8 +82,8 @@ if __name__ == '__main__':
 		if not os.path.exists(out_folder):
 			os.makedirs(out_folder)
 	except:
-		print "Provide the following arguments"
-		print "1. Input folder name"
-		print "2. Output folder name"
+		print ("Provide the following arguments")
+		print ("1. Input folder name")
+		print ("2. Output folder name")
 		exit()
 	main(in_folder, out_folder)
