@@ -26,7 +26,8 @@ def removeBackground(image_file, out_folder):
 	gray = cv2.GaussianBlur(gray, (5, 5), 0)
 
 	# Calculate otsu threshold for edge detection
-	ret, threshed_img = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+	ret, threshed_img = cv2.threshold(gray, 0, 200, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+	#ret, threshed_img = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 	high = ret
 	low = high * 0.5
 
@@ -36,7 +37,7 @@ def removeBackground(image_file, out_folder):
 	edges = cv2.erode(edges, None)
 
 	# Find all contours and get the one with the biggest area
-	_, contours, _ = cv2.findContours(edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+	_, contours, _ = cv2.findContours(threshed_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 	max_contour = sorted(contours, key=lambda c: cv2.contourArea(c), reverse=True)[0]
 	x, y, w, h = cv2.boundingRect(max_contour)
 
@@ -47,7 +48,8 @@ def removeBackground(image_file, out_folder):
 	y2 = y + h if abs(height - (y + h)) > 5 else (y + h) - 5
 
 	# Create bounding box based on the largest contour of the image
-	rect = (x1, y1, x2, y2)
+	#rect = (x1, y1, x2, y2)
+	rect = (0, 0, width-1, height-1)
 
 	mask = np.zeros(img.shape[:2], dtype=np.uint8)
 
@@ -72,7 +74,7 @@ def main(in_folder, out_folder):
 	images = []
 	for file_type in file_types:
 		images.extend(glob.glob('%s/%s' % (in_folder, file_type)))
-	p = Pool(processes=16)
+	p = Pool(processes=3)
 	p.map(partial(removeBackground, out_folder=out_folder), images)
 
 if __name__ == '__main__':
